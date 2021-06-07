@@ -94,34 +94,44 @@ function prevSong(){
   playTrack();
 };
 
+// Current Time and duration
 function getTheCurrentTime(WhatsTheTime){
   if (isPlaying) {
     const {duration, currentTime} = WhatsTheTime.srcElement;
     const progressedTimeinPercent = (currentTime/duration) * 100
     progressDark.style.width = `${progressedTimeinPercent}%`
 
-    let durationMinutes = Math.floor(duration/60)
-    let durationSeconds = Math.round(duration % 60)
-
+    //running
     let runningMinutes = Math.floor(currentTime / 60)
     let runningSeconds = Math.floor(currentTime % 60)
-    if (durationMinutes < 10 && durationSeconds < 10){
-      totalTime.textContent = `0${durationMinutes}:0${durationSeconds}`
-    } else if (durationSeconds < 10){
-      totalTime.textContent = `${durationMinutes}:0${durationSeconds}`
-    } else if (durationMinutes < 10) {
+    if (runningSeconds < 10){
+      runningSeconds = `0${runningSeconds}`
+    } 
+    runningTime.textContent = `0${runningMinutes}:${runningSeconds}`
+
+    //duration
+    let durationMinutes = Math.floor(duration/60)
+    let durationSeconds = Math.round(duration % 60)
+    if (durationSeconds < 10){
+      durationSeconds = `0${durationSeconds}`
+    } 
+    // to avoid showing NaN
+    if (durationSeconds){
       totalTime.textContent = `0${durationMinutes}:${durationSeconds}`
     }
-    runningTime.textContent = `0${runningMinutes}:0${runningSeconds}`
-
-    console.log(Math.floor(duration)/60) 
-    console.log(Math.floor(currentTime%60)) // 1,2,3,4,.....n
-    console.log(durationSeconds)
-
   }
+}
+
+function seekTo(e){
+  console.log(e)
+  const width = this.clientWidth;
+  const clickX = e.offsetX;
+  audio.currentTime = (clickX/width)*audio.duration
 }
 
 //event listeners
 next.addEventListener('click', nextSong)
 prev.addEventListener('click', prevSong)   
 audio.addEventListener('timeupdate', getTheCurrentTime)
+audio.addEventListener('ended', nextSong)
+progressContainer.addEventListener('click', seekTo)
